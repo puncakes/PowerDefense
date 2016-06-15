@@ -17,19 +17,24 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public class TurretItem extends Item {
+	
+	public static final TurretItem instance = new TurretItem();
+    public static final String name = "Turret";
 
-	public void init() {
 
-		this.setUnlocalizedName("Turret");
-		this.setRegistryName("Turret");
-		this.setCreativeTab(CreativeTabs.tabMisc);
-		GameRegistry.register(this);
+	public static void init() {
+
+		instance.setUnlocalizedName("Turret");
+		instance.setRegistryName("Turret");
+		instance.setCreativeTab(CreativeTabs.tabMisc);
+		GameRegistry.register(instance);
 	}
 	
-	public void setupRenderer() {
+	public static void setupRenderer() {
 		System.out.println("Setting turret item textures!!!!!");
-		//RenderItem renderItem = Minecraft.getMinecraft().getRenderItem();
-		//renderItem.getItemModelMesher().register(this, 0, new ModelResourceLocation(PowerDefense.MODID + ":" + "Turret", "inventory"));
+		RenderItem renderItem = Minecraft.getMinecraft().getRenderItem();
+		ModelResourceLocation mrl = new ModelResourceLocation(PowerDefense.MODID + ":" + "Turret", "inventory");
+		renderItem.getItemModelMesher().register(instance, 0, mrl);
 	}
 
 	@Override

@@ -6,6 +6,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.util.EnumFacing;
@@ -18,14 +19,20 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class TurretBlock extends Block {
 	
-	public void init() {
-		this.setUnlocalizedName("Dome");
-		this.setRegistryName("Dome");
-		GameRegistry.register(this);
+	public static final TurretBlock instance = new TurretBlock();
+    public static final String name = "Turret";
+	
+	public static void init() {
+		instance.setUnlocalizedName(name);
+		instance.setRegistryName(name);
+		instance.setCreativeTab(CreativeTabs.tabMisc);
+		GameRegistry.register(instance);
+		GameRegistry.register(new ItemBlock(instance).setRegistryName(instance.getRegistryName()));
 	}
 	
-	public void initClient() {
-		ModelLoader.setCustomModelResourceLocation(new TurretItem(), 0, new ModelResourceLocation(PowerDefense.MODID + ":" + "Dome", "inventory"));
+	public static void initClient() {
+		Item item = Item.getItemFromBlock(instance);
+		ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation(PowerDefense.MODID + ":" + "Turret", "inventory"));
 	}
 	
 	@Override
