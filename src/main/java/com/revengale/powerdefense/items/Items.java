@@ -9,7 +9,7 @@ public final class Items {
 	public static TurretItem turretItem;
 	public static final void init() {
 		//turret
-		//TurretItem.init();
+		TurretItem.init();
 		TurretBlock.init();
 		PedestalBlock.init();
 		
@@ -17,7 +17,7 @@ public final class Items {
 	}
 	
 	public static final void setupClients() {
-		//TurretItem.setupRenderer();
+		TurretItem.setupRenderer();
 		TurretBlock.initClient();
 		PedestalBlock.initModel();
 		

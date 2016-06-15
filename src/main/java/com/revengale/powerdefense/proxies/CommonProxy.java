@@ -16,7 +16,7 @@ public class CommonProxy {
     }
 
     public void init(FMLInitializationEvent e) {
-
+    	OBJLoader.INSTANCE.addDomain(PowerDefense.MODID);
     }
 
     public void postInit(FMLPostInitializationEvent e) {

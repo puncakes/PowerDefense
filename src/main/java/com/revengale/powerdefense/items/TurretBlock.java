@@ -27,12 +27,12 @@ public class TurretBlock extends Block {
 		instance.setRegistryName(name);
 		instance.setCreativeTab(CreativeTabs.tabMisc);
 		GameRegistry.register(instance);
-		GameRegistry.register(new ItemBlock(instance).setRegistryName(instance.getRegistryName()));
+		//GameRegistry.register(new ItemBlock(instance).setRegistryName(instance.getRegistryName()));
 	}
 	
 	public static void initClient() {
-		Item item = Item.getItemFromBlock(instance);
-		ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation(PowerDefense.MODID + ":" + "Turret", "inventory"));
+		//Item item = Item.getItemFromBlock(instance);
+		ModelLoader.setCustomModelResourceLocation(TurretItem.instance, 0, new ModelResourceLocation(PowerDefense.MODID + ":" + "Turret", "inventory"));
 	}
 	
 	@Override
