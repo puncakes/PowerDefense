@@ -24,8 +24,14 @@ public class TurretBlockTileEntity extends TileEntity implements ITickable {
         return stack;
     }
     public EntityLivingBase target = null;
-    public float BodyAngle = 0f;
-    public float GunAngle = 0f;
+    
+    public float curBodyAngle = 0f;
+    public float curGunAngle = 0f;
+    
+    public float targetBodyAngle = 0f;
+    public float targetGunAngle = 0f;
+    
+    public float rotationDelta = 3.0f;
 
     public void setStack(ItemStack stack) {
         this.stack = stack;
@@ -106,9 +112,26 @@ public class TurretBlockTileEntity extends TileEntity implements ITickable {
 			
 			double pitch = Math.asin(dir.yCoord);
 			double yaw = Math.atan2(dir.xCoord, dir.zCoord);
-			BodyAngle = (float) (yaw * 180.0 / Math.PI) - 90f;
-			GunAngle = (float) (pitch * 180.0 / Math.PI);
+			targetBodyAngle = (float) (yaw * 180.0 / Math.PI) - 90f;
+			targetGunAngle = (float) (pitch * 180.0 / Math.PI);
 			ticksSinceLastChoice++;
+		}
+		
+		//float bodyRotDir = (curBodyAngle - targetBodyAngle + 180f) <= 0 ? 1 : -1;
+		
+		float cba = (curBodyAngle - 180f) % 360;
+		float tba = (targetBodyAngle - 180f) % 360;
+		
+		if(cba < tba) {
+			curBodyAngle = Math.min(curBodyAngle + rotationDelta, targetBodyAngle);
+		} else {
+			curBodyAngle = Math.max(curBodyAngle - rotationDelta, targetBodyAngle);
+		}
+		
+		if(curGunAngle < targetGunAngle) {
+			curGunAngle = Math.min(curGunAngle + rotationDelta, targetGunAngle);
+		} else {
+			curGunAngle = Math.max(curGunAngle - rotationDelta, targetGunAngle);
 		}
 		
 	}

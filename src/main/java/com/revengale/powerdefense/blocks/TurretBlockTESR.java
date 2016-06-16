@@ -84,7 +84,7 @@ public class TurretBlockTESR extends TileEntitySpecialRenderer<TurretBlockTileEn
 
         GlStateManager.translate(.5, 0.2, .5);
         //long angle = (System.currentTimeMillis() / 10) % 360;
-        GlStateManager.rotate(te.BodyAngle, 0, 1, 0);
+        GlStateManager.rotate(te.curBodyAngle, 0, 1, 0);
 
         RenderHelper.disableStandardItemLighting();
         this.bindTexture(TextureMap.locationBlocksTexture);
@@ -116,8 +116,8 @@ public class TurretBlockTESR extends TileEntitySpecialRenderer<TurretBlockTileEn
         
         GlStateManager.translate(.5, 0.35, .5);
 
-        GlStateManager.rotate(te.BodyAngle, 0, 1, 0);
-        GlStateManager.rotate(te.GunAngle, 0, 0, 1);
+        GlStateManager.rotate(te.curBodyAngle, 0, 1, 0);
+        GlStateManager.rotate(te.curGunAngle, 0, 0, 1);
         GlStateManager.translate(-te.getPos().getX(), -te.getPos().getY(), -te.getPos().getZ());
         
         tessellator.getBuffer().begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
