@@ -11,12 +11,10 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 public class CommonProxy {
 
     public void preInit(FMLPreInitializationEvent e) {
-    	OBJLoader.INSTANCE.addDomain(PowerDefense.MODID);
     	Items.init();
     }
 
     public void init(FMLInitializationEvent e) {
-    	OBJLoader.INSTANCE.addDomain(PowerDefense.MODID);
     }
 
     public void postInit(FMLPostInitializationEvent e) {

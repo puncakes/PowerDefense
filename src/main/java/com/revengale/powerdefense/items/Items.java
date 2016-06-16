@@ -1,5 +1,6 @@
 package com.revengale.powerdefense.items;
 
+import com.revengale.powerdefense.blocks.TurretBlock;
 import com.revengale.powerdefense.blocks.itempedestal.PedestalBlock;
 
 public final class Items {

@@ -14,13 +14,14 @@ public class ClientProxy extends CommonProxy {
 	public void preInit(FMLPreInitializationEvent e) {
 		// TODO Auto-generated method stub
 		super.preInit(e);
-		
+		OBJLoader.INSTANCE.addDomain(PowerDefense.MODID);
 	}
 
 	@Override
 	public void init(FMLInitializationEvent e) {
 		// TODO Auto-generated method stub
 		super.init(e);
+		OBJLoader.INSTANCE.addDomain(PowerDefense.MODID);
 		Items.setupClients();
 	}
 

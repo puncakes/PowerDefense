@@ -1,6 +1,7 @@
 package com.revengale.powerdefense.items;
 
 import com.revengale.powerdefense.PowerDefense;
+import com.revengale.powerdefense.blocks.TurretBlock;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
