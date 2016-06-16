@@ -11,6 +11,7 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ITickable;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
 
@@ -24,6 +25,7 @@ public class TurretBlockTileEntity extends TileEntity implements ITickable {
     }
     public EntityLivingBase target = null;
     public float BodyAngle = 0f;
+    public float GunAngle = 0f;
 
     public void setStack(ItemStack stack) {
         this.stack = stack;
@@ -96,11 +98,16 @@ public class TurretBlockTileEntity extends TileEntity implements ITickable {
 			Vec3d center = new Vec3d(this.getPos().getX(),this.getPos().getY(),this.getPos().getZ());
 			center = center.add(new Vec3d(0.5, 0.5, 0.5));
 			
-			Vec3d dir = center.subtract(new Vec3d(target.posX, target.posY, target.posZ));
+			double xOff = 0;//(tBB.maxX - tBB.minX) / 2.0;
+			double yOff = 0.8;//(tBB.maxY - tBB.minY) / 2.0;
+			double zOff = 0;//(tBB.maxZ - tBB.minZ) / 2.0;
+			Vec3d dir = center.subtract(new Vec3d(target.posX+xOff, target.posY+yOff, target.posZ+zOff));
 			dir = dir.normalize();
 			
+			double pitch = Math.asin(dir.yCoord);
 			double yaw = Math.atan2(dir.xCoord, dir.zCoord);
-			BodyAngle = (float) (yaw * 180.0 / Math.PI) + 90f;
+			BodyAngle = (float) (yaw * 180.0 / Math.PI) - 90f;
+			GunAngle = (float) (pitch * 180.0 / Math.PI);
 			ticksSinceLastChoice++;
 		}
 		
