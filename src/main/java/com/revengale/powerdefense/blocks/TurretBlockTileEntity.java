@@ -2,6 +2,8 @@ package com.revengale.powerdefense.blocks;
 
 import java.util.List;
 
+import com.revengale.powerdefense.items.projectiles.EntityCustomArrow;
+
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemStack;
@@ -11,9 +13,7 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ITickable;
-import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3i;
 
 public class TurretBlockTileEntity extends TileEntity implements ITickable {
 
@@ -31,7 +31,9 @@ public class TurretBlockTileEntity extends TileEntity implements ITickable {
     public float targetBodyAngle = 0f;
     public float targetGunAngle = 0f;
     
-    public float rotationDelta = 3.0f;
+    public float rotationDelta = 5.0f;
+    
+    boolean justLostTarget = false;
 
     public void setStack(ItemStack stack) {
         this.stack = stack;
@@ -84,7 +86,7 @@ public class TurretBlockTileEntity extends TileEntity implements ITickable {
 		// TODO Auto-generated method stub
 		
 		if(ticksSinceLastChoice > 20) {
-			target = null;
+			//target = null;
 			List<EntityLivingBase> entities = worldObj.getEntitiesWithinAABB(EntityLivingBase.class, this.getRenderBoundingBox().expand(10, 10, 10));
 			
 			double closest = Double.MAX_VALUE;
@@ -104,9 +106,9 @@ public class TurretBlockTileEntity extends TileEntity implements ITickable {
 			Vec3d center = new Vec3d(this.getPos().getX(),this.getPos().getY(),this.getPos().getZ());
 			center = center.add(new Vec3d(0.5, 0.5, 0.5));
 			
-			double xOff = 0;//(tBB.maxX - tBB.minX) / 2.0;
-			double yOff = 0.8;//(tBB.maxY - tBB.minY) / 2.0;
-			double zOff = 0;//(tBB.maxZ - tBB.minZ) / 2.0;
+			double xOff = 0;  //(tBB.maxX - tBB.minX) / 2.0;
+			double yOff = 0.5;//(tBB.maxY - tBB.minY) / 2.0;
+			double zOff = 0;  //(tBB.maxZ - tBB.minZ) / 2.0;
 			Vec3d dir = center.subtract(new Vec3d(target.posX+xOff, target.posY+yOff, target.posZ+zOff));
 			dir = dir.normalize();
 			
@@ -114,25 +116,45 @@ public class TurretBlockTileEntity extends TileEntity implements ITickable {
 			double yaw = Math.atan2(dir.xCoord, dir.zCoord);
 			targetBodyAngle = (float) (yaw * 180.0 / Math.PI) - 90f;
 			targetGunAngle = (float) (pitch * 180.0 / Math.PI);
+			
+			//float cba = (curBodyAngle - 180f) % 180;
+			//float tba = (targetBodyAngle - 180f) % 180;
+			
+			boolean right = (curBodyAngle-targetBodyAngle+360)%360>180;
+			
+			if(ticksSinceLastChoice % 7 == 0) {
+				//worldObj.playAuxSFXAtEntity(this, "random.bow", 0.5F, 0.4F);
+		       if (!worldObj.isRemote)
+		       {
+		    	   EntityCustomArrow arrow = new EntityCustomArrow(worldObj);
+		    	   arrow.setPosition(center.xCoord, center.yCoord, center.zCoord);
+		    	   
+		    	   double xzLen = Math.cos(Math.toRadians(curGunAngle));
+		    	   double z = xzLen * Math.sin(Math.toRadians(curBodyAngle));
+				   double y = -Math.sin(Math.toRadians(curGunAngle));
+				   double x = -xzLen * Math.cos(Math.toRadians(-curBodyAngle));
+		    	   
+		    	   arrow.setThrowableHeading(x, y, z, 2f, 0);
+		    	   worldObj.spawnEntityInWorld(arrow);
+		       }
+			}
+			
+			if(right) {
+				curBodyAngle = Math.min(curBodyAngle + rotationDelta, targetBodyAngle);
+			} else {
+				curBodyAngle = Math.max(curBodyAngle - rotationDelta, targetBodyAngle);
+			}
+			
+			if(curGunAngle < targetGunAngle) {
+				curGunAngle = Math.min(curGunAngle + rotationDelta, targetGunAngle);
+			} else {
+				curGunAngle = Math.max(curGunAngle - rotationDelta, targetGunAngle);
+			}
+			
 			ticksSinceLastChoice++;
 		}
 		
-		//float bodyRotDir = (curBodyAngle - targetBodyAngle + 180f) <= 0 ? 1 : -1;
 		
-		float cba = (curBodyAngle - 180f) % 360;
-		float tba = (targetBodyAngle - 180f) % 360;
-		
-		if(cba < tba) {
-			curBodyAngle = Math.min(curBodyAngle + rotationDelta, targetBodyAngle);
-		} else {
-			curBodyAngle = Math.max(curBodyAngle - rotationDelta, targetBodyAngle);
-		}
-		
-		if(curGunAngle < targetGunAngle) {
-			curGunAngle = Math.min(curGunAngle + rotationDelta, targetGunAngle);
-		} else {
-			curGunAngle = Math.max(curGunAngle - rotationDelta, targetGunAngle);
-		}
 		
 	}
 }
