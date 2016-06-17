@@ -20,7 +20,7 @@ public final class Items {
 		PedestalBlock.init();
 		
 		//Entities
-		EntityRegistry.registerModEntity(EntityCustomArrow.class, EntityCustomArrow.name, entityId++, PowerDefense.instance, 80, 3, false);
+		EntityRegistry.registerModEntity(EntityCustomArrow.class, EntityCustomArrow.name, entityId++, PowerDefense.instance, 64, 20, true);
 		
 		
 	}

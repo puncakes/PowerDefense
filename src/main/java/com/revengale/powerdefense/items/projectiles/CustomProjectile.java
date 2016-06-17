@@ -278,7 +278,10 @@ public abstract class CustomProjectile extends Entity implements IProjectile
 
             if (raytraceresult != null)
             {
-                this.func_184549_a(raytraceresult);
+            	//order here is important!
+            	if(raytraceresult.entityHit != null || !(this.worldObj.getBlockState(raytraceresult.getBlockPos()).getBlock() instanceof TurretBlock)) {
+            		this.func_184549_a(raytraceresult);
+            	}
             }
 
             if (this.getIsCritical())

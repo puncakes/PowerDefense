@@ -6,6 +6,7 @@ import com.revengale.powerdefense.items.projectiles.EntityCustomArrow;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
@@ -31,7 +32,7 @@ public class TurretBlockTileEntity extends TileEntity implements ITickable {
     public float targetBodyAngle = 0f;
     public float targetGunAngle = 0f;
     
-    public float rotationDelta = 5.0f;
+    public float rotationDelta = 3.0f;
     
     boolean justLostTarget = false;
 
@@ -92,6 +93,9 @@ public class TurretBlockTileEntity extends TileEntity implements ITickable {
 			double closest = Double.MAX_VALUE;
 			for (int i = 0; i < entities.size(); i++) {
 				EntityLivingBase elb = entities.get(i);
+				if(elb instanceof EntityPlayer) {
+					continue;
+				}
 				double dist = this.getPos().distanceSq(elb.posX, elb.posY, elb.posZ);
 				if(dist < closest) {
 					target = elb;
@@ -107,7 +111,7 @@ public class TurretBlockTileEntity extends TileEntity implements ITickable {
 			center = center.add(new Vec3d(0.5, 0.5, 0.5));
 			
 			double xOff = 0;  //(tBB.maxX - tBB.minX) / 2.0;
-			double yOff = 0.5;//(tBB.maxY - tBB.minY) / 2.0;
+			double yOff = 0.8;//(tBB.maxY - tBB.minY) / 2.0;
 			double zOff = 0;  //(tBB.maxZ - tBB.minZ) / 2.0;
 			Vec3d dir = center.subtract(new Vec3d(target.posX+xOff, target.posY+yOff, target.posZ+zOff));
 			dir = dir.normalize();
@@ -122,7 +126,7 @@ public class TurretBlockTileEntity extends TileEntity implements ITickable {
 			
 			boolean right = (curBodyAngle-targetBodyAngle+360)%360>180;
 			
-			if(ticksSinceLastChoice % 7 == 0) {
+			if(ticksSinceLastChoice == 10) {
 				//worldObj.playAuxSFXAtEntity(this, "random.bow", 0.5F, 0.4F);
 		       if (!worldObj.isRemote)
 		       {
@@ -134,7 +138,7 @@ public class TurretBlockTileEntity extends TileEntity implements ITickable {
 				   double y = -Math.sin(Math.toRadians(curGunAngle));
 				   double x = -xzLen * Math.cos(Math.toRadians(-curBodyAngle));
 		    	   
-		    	   arrow.setThrowableHeading(x, y, z, 2f, 0);
+		    	   arrow.setThrowableHeading(x, y, z, 2f, 1f);
 		    	   worldObj.spawnEntityInWorld(arrow);
 		       }
 			}

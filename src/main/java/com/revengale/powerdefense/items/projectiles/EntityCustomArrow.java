@@ -4,9 +4,9 @@ import java.util.Collection;
 import java.util.Set;
 
 import com.google.common.collect.Sets;
+import com.revengale.powerdefense.renderer.RenderCustomArrow;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.entity.RenderTippedArrow;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.init.Items;
 import net.minecraft.init.PotionTypes;
@@ -37,7 +37,7 @@ public class EntityCustomArrow extends CustomProjectile
     @SideOnly(Side.CLIENT)
     public static void setupRenderer() {
     	//RenderingRegistry.registerEntityRenderingHandler(EntityCustomArrow.class, new RenderArrow<EntityCustomArrow>(Minecraft.getMinecraft().getRenderManager()));
-    	RenderingRegistry.registerEntityRenderingHandler(EntityCustomArrow.class, new RenderTippedArrow(Minecraft.getMinecraft().getRenderManager()));
+    	RenderingRegistry.registerEntityRenderingHandler(EntityCustomArrow.class, new RenderCustomArrow(Minecraft.getMinecraft().getRenderManager()));
     }
 
     public EntityCustomArrow(World worldIn)
