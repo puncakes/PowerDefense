@@ -320,8 +320,12 @@ public abstract class CustomProjectile extends Entity implements IProjectile
 
             this.rotationPitch = this.prevRotationPitch + (this.rotationPitch - this.prevRotationPitch) * 0.2F;
             this.rotationYaw = this.prevRotationYaw + (this.rotationYaw - this.prevRotationYaw) * 0.2F;
+            
+            //air resistance
             float f1 = 0.99F;
-            float f2 = 0.05F;
+            
+            //gravity
+            float f2 = 0.01F;
 
             if (this.isInWater())
             {

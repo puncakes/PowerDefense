@@ -28,8 +28,11 @@ public class TurretBlockTESR extends TileEntitySpecialRenderer<TurretBlockTileEn
     private IModel body;
     private IBakedModel bakedBody;
     
-    private IModel guns;
-    private IBakedModel bakedGuns;
+    private IModel gunsRight;
+    private IBakedModel bakedGunsRight;
+    
+    private IModel gunsLeft;
+    private IBakedModel bakedGunsLeft;
 
     private IBakedModel getBakedBody() {
         // Since we cannot bake in preInit() we do lazy baking of the model as soon as we need it
@@ -46,19 +49,34 @@ public class TurretBlockTESR extends TileEntitySpecialRenderer<TurretBlockTileEn
         return bakedBody;
     }
     
-    private IBakedModel getBakedGuns() {
+    private IBakedModel getBakedGunsLeft() {
         // Since we cannot bake in preInit() we do lazy baking of the model as soon as we need it
         // for rendering
-        if (bakedGuns == null) {
+        if (bakedGunsLeft == null) {
             try {
-            	guns = ModelLoaderRegistry.getModel(new ResourceLocation(PowerDefense.MODID, "block/turretguns.obj"));
+            	gunsLeft = ModelLoaderRegistry.getModel(new ResourceLocation(PowerDefense.MODID, "block/turretgunsleft.obj"));
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
-            bakedGuns = guns.bake(TRSRTransformation.identity(), DefaultVertexFormats.ITEM,
+            bakedGunsLeft = gunsLeft.bake(TRSRTransformation.identity(), DefaultVertexFormats.ITEM,
                     location -> Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(location.toString()));
         }
-        return bakedGuns;
+        return bakedGunsLeft;
+    }
+    
+    private IBakedModel getBakedGunsRight() {
+        // Since we cannot bake in preInit() we do lazy baking of the model as soon as we need it
+        // for rendering
+        if (bakedGunsRight == null) {
+            try {
+            	gunsRight = ModelLoaderRegistry.getModel(new ResourceLocation(PowerDefense.MODID, "block/turretgunsright.obj"));
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+            bakedGunsRight = gunsRight.bake(TRSRTransformation.identity(), DefaultVertexFormats.ITEM,
+                    location -> Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(location.toString()));
+        }
+        return bakedGunsRight;
     }
 
 
@@ -111,25 +129,49 @@ public class TurretBlockTESR extends TileEntitySpecialRenderer<TurretBlockTileEn
         tessellator.draw();
         
         GlStateManager.popMatrix();
-        GlStateManager.pushMatrix();
         
+        //left guns
+        GlStateManager.pushMatrix();
         
         GlStateManager.translate(.5, 0.35, .5);
 
         GlStateManager.rotate(te.curBodyAngle, 0, 1, 0);
         GlStateManager.rotate(te.curGunAngle, 0, 0, 1);
+        GlStateManager.scale(te.leftGunScale, 1, 1);
         GlStateManager.translate(-te.getPos().getX(), -te.getPos().getY(), -te.getPos().getZ());
         
         tessellator.getBuffer().begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
         
         Minecraft.getMinecraft().getBlockRendererDispatcher().getBlockModelRenderer().renderModel(
                 world,
-                getBakedGuns(),
+                getBakedGunsLeft(),
                 world.getBlockState(te.getPos()),
                 te.getPos(),
                 Tessellator.getInstance().getBuffer(), false);
         
         tessellator.draw();
+        GlStateManager.popMatrix();
+        
+        //right guns
+        GlStateManager.pushMatrix();
+       
+        GlStateManager.translate(.5, 0.35, .5);
+        
+        GlStateManager.rotate(te.curBodyAngle, 0, 1, 0);
+        GlStateManager.rotate(te.curGunAngle, 0, 0, 1);        
+        GlStateManager.scale(te.rightGunScale, 1, 1);
+        GlStateManager.translate(-te.getPos().getX(), -te.getPos().getY(), -te.getPos().getZ());
+        
+        tessellator.getBuffer().begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
+        
+        Minecraft.getMinecraft().getBlockRendererDispatcher().getBlockModelRenderer().renderModel(
+                world,
+                getBakedGunsRight(),
+                world.getBlockState(te.getPos()),
+                te.getPos(),
+                Tessellator.getInstance().getBuffer(), false);
+        
+        tessellator.draw();        
 
         RenderHelper.enableStandardItemLighting();
         GlStateManager.popMatrix();

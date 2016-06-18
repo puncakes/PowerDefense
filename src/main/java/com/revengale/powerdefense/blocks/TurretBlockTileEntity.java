@@ -14,7 +14,11 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ITickable;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.Vec3d;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class TurretBlockTileEntity extends TileEntity implements ITickable {
 
@@ -32,9 +36,25 @@ public class TurretBlockTileEntity extends TileEntity implements ITickable {
     public float targetBodyAngle = 0f;
     public float targetGunAngle = 0f;
     
+    public Vec3d targetDir = Vec3d.ZERO;
+    public Vec3d currentDir = Vec3d.ZERO;
+    
     public float rotationDelta = 3.0f;
     
+    public float leftGunScale = 1.0f;
+    public float rightGunScale = 1.0f;
+    private float recoil = 0.8f;
+    private float recoilRecovery = 0.05f;
+    
+    //toggle projectile coming out of each barrel 1/-1
+    private double barrelToggle = 1.0;
+    
     boolean justLostTarget = false;
+    
+    public TurretBlockTileEntity() {
+    	super();
+    	MinecraftForge.EVENT_BUS.register(this);
+    }
 
     public void setStack(ItemStack stack) {
         this.stack = stack;
@@ -81,14 +101,40 @@ public class TurretBlockTileEntity extends TileEntity implements ITickable {
             compound.setTag("item", tagCompound);
         }
     }
+    
+    @SubscribeEvent
+    public void onEntitySpawn (EntityJoinWorldEvent event) {
+		if(event.getEntity() instanceof EntityCustomArrow ) {
+			EntityCustomArrow arrow = (EntityCustomArrow) event.getEntity();
+	    	if(this.getPos().equals(arrow.getBlockFrom())) {
+	    		barrelToggle *= -1;
+	    		if(barrelToggle < 0) {
+			   		leftGunScale = recoil;
+			   	} else {
+			   		rightGunScale = recoil;
+			   	}
+	    	}
+	    }
+	}
+    
+    private boolean onTarget() {
+    	float deg = curBodyAngle-targetBodyAngle;
+    	if(deg < 0) {
+    		deg+= 360;
+    	}
+    	if(deg < 30) {
+    		return true;
+    	}
+    	return false;
+    }
 
 	@Override
 	public void update() {
 		// TODO Auto-generated method stub
 		
 		if(ticksSinceLastChoice > 20) {
-			//target = null;
-			List<EntityLivingBase> entities = worldObj.getEntitiesWithinAABB(EntityLivingBase.class, this.getRenderBoundingBox().expand(10, 10, 10));
+			target = null;
+			List<EntityLivingBase> entities = worldObj.getEntitiesWithinAABB(EntityLivingBase.class, new AxisAlignedBB(this.getPos()).expand(20, 8, 20));
 			
 			double closest = Double.MAX_VALUE;
 			for (int i = 0; i < entities.size(); i++) {
@@ -111,13 +157,13 @@ public class TurretBlockTileEntity extends TileEntity implements ITickable {
 			center = center.add(new Vec3d(0.5, 0.5, 0.5));
 			
 			double xOff = 0;  //(tBB.maxX - tBB.minX) / 2.0;
-			double yOff = 0.8;//(tBB.maxY - tBB.minY) / 2.0;
+			double yOff = 0.5;//(tBB.maxY - tBB.minY) / 2.0;
 			double zOff = 0;  //(tBB.maxZ - tBB.minZ) / 2.0;
 			Vec3d dir = center.subtract(new Vec3d(target.posX+xOff, target.posY+yOff, target.posZ+zOff));
-			dir = dir.normalize();
+			targetDir = dir.normalize();
 			
-			double pitch = Math.asin(dir.yCoord);
-			double yaw = Math.atan2(dir.xCoord, dir.zCoord);
+			double pitch = Math.asin(targetDir.yCoord);
+			double yaw = Math.atan2(targetDir.xCoord, targetDir.zCoord);
 			targetBodyAngle = (float) (yaw * 180.0 / Math.PI) - 90f;
 			targetGunAngle = (float) (pitch * 180.0 / Math.PI);
 			
@@ -126,21 +172,31 @@ public class TurretBlockTileEntity extends TileEntity implements ITickable {
 			
 			boolean right = (curBodyAngle-targetBodyAngle+360)%360>180;
 			
-			if(ticksSinceLastChoice == 10) {
+			//only shoot when on target
+			if(onTarget() && (ticksSinceLastChoice == 0 || ticksSinceLastChoice == 5 || ticksSinceLastChoice == 10 || ticksSinceLastChoice == 15)) {
 				//worldObj.playAuxSFXAtEntity(this, "random.bow", 0.5F, 0.4F);
-		       if (!worldObj.isRemote)
-		       {
-		    	   EntityCustomArrow arrow = new EntityCustomArrow(worldObj);
-		    	   arrow.setPosition(center.xCoord, center.yCoord, center.zCoord);
-		    	   
-		    	   double xzLen = Math.cos(Math.toRadians(curGunAngle));
-		    	   double z = xzLen * Math.sin(Math.toRadians(curBodyAngle));
-				   double y = -Math.sin(Math.toRadians(curGunAngle));
-				   double x = -xzLen * Math.cos(Math.toRadians(-curBodyAngle));
-		    	   
-		    	   arrow.setThrowableHeading(x, y, z, 2f, 1f);
-		    	   worldObj.spawnEntityInWorld(arrow);
-		       }
+				double xzLen = Math.cos(Math.toRadians(curGunAngle));
+				double z = xzLen * Math.sin(Math.toRadians(curBodyAngle));
+				double y = -Math.sin(Math.toRadians(curGunAngle));
+				double x = -xzLen * Math.cos(Math.toRadians(-curBodyAngle));
+			   
+				//for use in client rendering (scaling for recoil)
+				currentDir = new Vec3d(x,y,z);
+				
+			   	if (!worldObj.isRemote)
+			   	{
+			   		EntityCustomArrow arrow = new EntityCustomArrow(worldObj);
+			   		//add direction vector and perpendicular vector to place projectiles at the barrel
+			   		arrow.setPosition(center.xCoord + x + (0.2 * barrelToggle * z), center.yCoord + y, center.zCoord + z - (0.2 * barrelToggle * x));
+			   		arrow.setThrowableHeading(x, y, z, 2f, 2f);
+			   		
+			   		//recoil animation starts when the entity is spawned client side!
+			   		//set some metadata to know which turret to animate client side
+			   		arrow.setBlockFrom(this.getPos());
+			   		worldObj.spawnEntityInWorld(arrow);
+			   		
+			   	}			   	
+			   
 			}
 			
 			if(right) {
@@ -154,11 +210,11 @@ public class TurretBlockTileEntity extends TileEntity implements ITickable {
 			} else {
 				curGunAngle = Math.max(curGunAngle - rotationDelta, targetGunAngle);
 			}
-			
-			ticksSinceLastChoice++;
 		}
-		
-		
+
+		leftGunScale = Math.min(leftGunScale + recoilRecovery, 1.0f);
+		rightGunScale = Math.min(rightGunScale + recoilRecovery, 1.0f);
+		ticksSinceLastChoice++;
 		
 	}
 }

@@ -21,6 +21,7 @@ import net.minecraft.potion.PotionType;
 import net.minecraft.potion.PotionUtils;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.relauncher.Side;
@@ -32,12 +33,23 @@ public class EntityCustomArrow extends CustomProjectile
     private PotionType potion = PotionTypes.empty;
     private final Set<PotionEffect> customPotionEffects = Sets.<PotionEffect>newHashSet();
     
+    private BlockPos cameFrom = null;
+    
     public static final String name = "customarrow";
     
     @SideOnly(Side.CLIENT)
     public static void setupRenderer() {
     	//RenderingRegistry.registerEntityRenderingHandler(EntityCustomArrow.class, new RenderArrow<EntityCustomArrow>(Minecraft.getMinecraft().getRenderManager()));
     	RenderingRegistry.registerEntityRenderingHandler(EntityCustomArrow.class, new RenderCustomArrow(Minecraft.getMinecraft().getRenderManager()));
+    }
+    
+    
+    public void setBlockFrom(BlockPos pos) {
+    	cameFrom = pos;
+    }
+    
+    public BlockPos getBlockFrom() {
+    	return cameFrom;
     }
 
     public EntityCustomArrow(World worldIn)
