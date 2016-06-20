@@ -1,0 +1,11 @@
+{
+	"turret.gun": {
+		"category": "neutral",
+		"sounds": [
+			{
+				"name": "powerdefense:turretgun",
+				"stream": false
+			}
+		]
+	}
+}

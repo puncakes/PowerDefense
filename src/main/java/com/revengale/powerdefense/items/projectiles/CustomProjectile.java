@@ -227,7 +227,8 @@ public abstract class CustomProjectile extends Entity implements IProjectile
             {
                 ++this.ticksInGround;
 
-                if (this.ticksInGround >= 1200)
+                //remove once hit ground
+                if (this.ticksInGround >= 0)
                 {
                     this.setDead();
                 }
@@ -417,7 +418,7 @@ public abstract class CustomProjectile extends Entity implements IProjectile
                     }
                 }
 
-                this.playSound(SoundEvents.entity_arrow_hit, 1.0F, 1.2F / (this.rand.nextFloat() * 0.2F + 0.9F));
+                //this.playSound(SoundEvents.entity_arrow_hit, 1.0F, 1.2F / (this.rand.nextFloat() * 0.2F + 0.9F));
 
                 if (!(entity instanceof EntityEnderman))
                 {
@@ -460,7 +461,7 @@ public abstract class CustomProjectile extends Entity implements IProjectile
             this.posX -= this.motionX / (double)f2 * 0.05000000074505806D;
             this.posY -= this.motionY / (double)f2 * 0.05000000074505806D;
             this.posZ -= this.motionZ / (double)f2 * 0.05000000074505806D;
-            this.playSound(SoundEvents.entity_arrow_hit, 1.0F, 1.2F / (this.rand.nextFloat() * 0.2F + 0.9F));
+            //this.playSound(SoundEvents.entity_arrow_hit, 1.0F, 1.2F / (this.rand.nextFloat() * 0.2F + 0.9F));
             this.inGround = true;
             this.arrowShake = 7;
             this.setIsCritical(false);

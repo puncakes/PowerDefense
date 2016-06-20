@@ -36,13 +36,13 @@ public abstract class ArrowRenderer<T extends EntityCustomArrow> extends Render<
         VertexBuffer vertexbuffer = tessellator.getBuffer();
         int i = 0;
         float f = 0.0F;
-        float f1 = 0.5F;
-        float f2 = (float)(0 + i * 10) / 32.0F;
-        float f3 = (float)(5 + i * 10) / 32.0F;
+        float f1 = 1F;
+        float f2 = (float)(0 + i * 10) / 64.0F;
+        float f3 = (float)(7 + i * 10) / 64.0F;
         float f4 = 0.0F;
-        float f5 = 0.15625F;
-        float f6 = (float)(5 + i * 10) / 32.0F;
-        float f7 = (float)(10 + i * 10) / 32.0F;
+        float f5 = 1.0f;
+        float f6 = 0.0f;//(float)(10 + i * 10) / 64.0F;
+        float f7 = 7.0f / 64.0F;
         float f8 = 0.05625F;
         GlStateManager.enableRescaleNormal();
         float f9 = (float)entity.arrowShake - partialTicks;
@@ -63,7 +63,7 @@ public abstract class ArrowRenderer<T extends EntityCustomArrow> extends Render<
             GlStateManager.enableOutlineMode(this.getTeamColor(entity));
         }
 
-        GlStateManager.glNormal3f(f8, 0.0F, 0.0F);
+        /*GlStateManager.glNormal3f(f8, 0.0F, 0.0F);
         vertexbuffer.begin(7, DefaultVertexFormats.POSITION_TEX);
         vertexbuffer.pos(-7.0D, -2.0D, -2.0D).tex((double)f4, (double)f6).endVertex();
         vertexbuffer.pos(-7.0D, -2.0D, 2.0D).tex((double)f5, (double)f6).endVertex();
@@ -76,17 +76,17 @@ public abstract class ArrowRenderer<T extends EntityCustomArrow> extends Render<
         vertexbuffer.pos(-7.0D, 2.0D, 2.0D).tex((double)f5, (double)f6).endVertex();
         vertexbuffer.pos(-7.0D, -2.0D, 2.0D).tex((double)f5, (double)f7).endVertex();
         vertexbuffer.pos(-7.0D, -2.0D, -2.0D).tex((double)f4, (double)f7).endVertex();
-        tessellator.draw();
+        tessellator.draw();*/
 
         for (int j = 0; j < 4; ++j)
         {
             GlStateManager.rotate(90.0F, 1.0F, 0.0F, 0.0F);
             GlStateManager.glNormal3f(0.0F, 0.0F, f8);
             vertexbuffer.begin(7, DefaultVertexFormats.POSITION_TEX);
-            vertexbuffer.pos(-8.0D, -2.0D, 0.0D).tex((double)f, (double)f2).endVertex();
-            vertexbuffer.pos(8.0D, -2.0D, 0.0D).tex((double)f1, (double)f2).endVertex();
-            vertexbuffer.pos(8.0D, 2.0D, 0.0D).tex((double)f1, (double)f3).endVertex();
-            vertexbuffer.pos(-8.0D, 2.0D, 0.0D).tex((double)f, (double)f3).endVertex();
+            vertexbuffer.pos(-8.0D, -0.5D, 0.0D).tex((double)f, (double)f2).endVertex();
+            vertexbuffer.pos(8.0D, -0.5D, 0.0D).tex((double)f1, (double)f2).endVertex();
+            vertexbuffer.pos(8.0D, 0.5D, 0.0D).tex((double)f1, (double)f3).endVertex();
+            vertexbuffer.pos(-8.0D, 0.5D, 0.0D).tex((double)f, (double)f3).endVertex();
             tessellator.draw();
         }
 

@@ -21,6 +21,7 @@ import net.minecraft.potion.PotionType;
 import net.minecraft.potion.PotionUtils;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
@@ -36,6 +37,9 @@ public class EntityCustomArrow extends CustomProjectile
     private BlockPos cameFrom = null;
     
     public static final String name = "customarrow";
+    public static void init() {
+    	
+    }
     
     @SideOnly(Side.CLIENT)
     public static void setupRenderer() {

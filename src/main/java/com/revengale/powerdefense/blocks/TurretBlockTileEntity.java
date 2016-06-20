@@ -1,7 +1,10 @@
 package com.revengale.powerdefense.blocks;
 
 import java.util.List;
+import java.util.Random;
 
+import com.revengale.powerdefense.PowerDefenseSoundEvents;
+import com.revengale.powerdefense.PowerDefenseUtils;
 import com.revengale.powerdefense.items.projectiles.EntityCustomArrow;
 
 import net.minecraft.block.state.IBlockState;
@@ -14,6 +17,7 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ITickable;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.common.MinecraftForge;
@@ -33,8 +37,14 @@ public class TurretBlockTileEntity extends TileEntity implements ITickable {
     public float curBodyAngle = 0f;
     public float curGunAngle = 0f;
     
+    public float curBodyAngleRad = 0f;
+    public float curGunAngleRad = 0f;
+    
     public float targetBodyAngle = 0f;
     public float targetGunAngle = 0f;
+    
+    public float targetBodyAngleRad = 0f;
+    public float targetGunAngleRad = 0f;
     
     public Vec3d targetDir = Vec3d.ZERO;
     public Vec3d currentDir = Vec3d.ZERO;
@@ -46,14 +56,18 @@ public class TurretBlockTileEntity extends TileEntity implements ITickable {
     private float recoil = 0.8f;
     private float recoilRecovery = 0.05f;
     
+    private Random rand;
+    
     //toggle projectile coming out of each barrel 1/-1
     private double barrelToggle = 1.0;
     
     boolean justLostTarget = false;
+    private Vec3d center = null;
     
     public TurretBlockTileEntity() {
     	super();
     	MinecraftForge.EVENT_BUS.register(this);
+    	rand = new Random();    	
     }
 
     public void setStack(ItemStack stack) {
@@ -113,16 +127,15 @@ public class TurretBlockTileEntity extends TileEntity implements ITickable {
 			   	} else {
 			   		rightGunScale = recoil;
 			   	}
+	    		worldObj.playSound((EntityPlayer)null, this.getPos().getX(), this.getPos().getY(), this.getPos().getZ(), PowerDefenseSoundEvents.turret_gun, SoundCategory.NEUTRAL, 0.25f, 1.2F / (this.rand.nextFloat() * 0.2F + 0.9F));
 	    	}
 	    }
 	}
     
     private boolean onTarget() {
-    	float deg = curBodyAngle-targetBodyAngle;
-    	if(deg < 0) {
-    		deg+= 360;
-    	}
-    	if(deg < 30) {
+    	float deg = (float) Math.atan2(Math.cos(targetBodyAngleRad-curBodyAngleRad), Math.sin(targetBodyAngleRad-curBodyAngleRad));
+    	
+    	if(Math.toDegrees(deg) < 15) {
     		return true;
     	}
     	return false;
@@ -131,6 +144,10 @@ public class TurretBlockTileEntity extends TileEntity implements ITickable {
 	@Override
 	public void update() {
 		// TODO Auto-generated method stub
+		
+		//center of block
+		center = new Vec3d(this.getPos().getX(),this.getPos().getY(),this.getPos().getZ());
+		center = center.add(new Vec3d(0.5, 0.35, 0.5));
 		
 		if(ticksSinceLastChoice > 20) {
 			target = null;
@@ -144,17 +161,17 @@ public class TurretBlockTileEntity extends TileEntity implements ITickable {
 				}
 				double dist = this.getPos().distanceSq(elb.posX, elb.posY, elb.posZ);
 				if(dist < closest) {
-					target = elb;
-					closest = dist;
+					//if in line of site
+					if(PowerDefenseUtils.rayTraceBlocks(worldObj, new Vec3d(center.xCoord, center.yCoord, center.zCoord), new Vec3d(elb.posX, elb.posY+elb.getEyeHeight(), elb.posZ), this.getPos()) == null) {
+						target = elb;
+						closest = dist;
+					}
 				}
 			}
 			ticksSinceLastChoice = 0;
 		}
 		
-		if(target != null) {
-			//center of block
-			Vec3d center = new Vec3d(this.getPos().getX(),this.getPos().getY(),this.getPos().getZ());
-			center = center.add(new Vec3d(0.5, 0.5, 0.5));
+		if(target != null) {		
 			
 			double xOff = 0;  //(tBB.maxX - tBB.minX) / 2.0;
 			double yOff = 0.5;//(tBB.maxY - tBB.minY) / 2.0;
@@ -164,6 +181,8 @@ public class TurretBlockTileEntity extends TileEntity implements ITickable {
 			
 			double pitch = Math.asin(targetDir.yCoord);
 			double yaw = Math.atan2(targetDir.xCoord, targetDir.zCoord);
+			targetBodyAngleRad = (float) yaw;
+		    targetGunAngleRad = (float) pitch;
 			targetBodyAngle = (float) (yaw * 180.0 / Math.PI) - 90f;
 			targetGunAngle = (float) (pitch * 180.0 / Math.PI);
 			
@@ -181,7 +200,7 @@ public class TurretBlockTileEntity extends TileEntity implements ITickable {
 				double x = -xzLen * Math.cos(Math.toRadians(-curBodyAngle));
 			   
 				//for use in client rendering (scaling for recoil)
-				currentDir = new Vec3d(x,y,z);
+				currentDir = new Vec3d(x,y,z);				
 				
 			   	if (!worldObj.isRemote)
 			   	{
@@ -210,6 +229,9 @@ public class TurretBlockTileEntity extends TileEntity implements ITickable {
 			} else {
 				curGunAngle = Math.max(curGunAngle - rotationDelta, targetGunAngle);
 			}
+			
+			curBodyAngleRad = (float) Math.toRadians(curBodyAngle);
+			curGunAngleRad = (float) Math.toRadians(curGunAngle);
 		}
 
 		leftGunScale = Math.min(leftGunScale + recoilRecovery, 1.0f);

@@ -10,8 +10,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class RenderCustomArrow extends ArrowRenderer<EntityCustomArrow>
 {
-    public static final ResourceLocation RES_ARROW = new ResourceLocation("textures/entity/projectiles/arrow.png");
-    public static final ResourceLocation RES_TIPPED_ARROW = new ResourceLocation("textures/entity/projectiles/tipped_arrow.png");
+    public static final ResourceLocation RES_ARROW = new ResourceLocation("powerdefense", "textures/entity/projectiles/bullet.png");
+    public static final ResourceLocation RES_TIPPED_ARROW = new ResourceLocation("powerdefense", "textures/entity/projectiles/bullet.png");
 
     public RenderCustomArrow(RenderManager p_i46547_1_)
     {
