@@ -105,7 +105,7 @@ public class TurretBlockTESR extends TileEntitySpecialRenderer<TurretBlockTileEn
         GlStateManager.rotate(te.curBodyAngle, 0, 1, 0);
 
         RenderHelper.disableStandardItemLighting();
-        this.bindTexture(TextureMap.locationBlocksTexture);
+        this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
         if (Minecraft.isAmbientOcclusionEnabled()) {
             GlStateManager.shadeModel(GL11.GL_SMOOTH);
         } else {

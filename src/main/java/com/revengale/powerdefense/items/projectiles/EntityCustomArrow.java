@@ -6,7 +6,9 @@ import java.util.Set;
 import com.google.common.collect.Sets;
 import com.revengale.powerdefense.renderer.RenderCustomArrow;
 
+import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.init.Items;
 import net.minecraft.init.PotionTypes;
@@ -16,22 +18,24 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraft.network.play.server.SPacketSpawnObject;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.potion.PotionType;
 import net.minecraft.potion.PotionUtils;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
+import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class EntityCustomArrow extends CustomProjectile
+public class EntityCustomArrow extends CustomProjectile implements IEntityAdditionalSpawnData
 {
     private static final DataParameter<Integer> COLOR = EntityDataManager.<Integer>createKey(EntityCustomArrow.class, DataSerializers.VARINT);
-    private PotionType potion = PotionTypes.empty;
+    private PotionType potion = PotionTypes.EMPTY;
     private final Set<PotionEffect> customPotionEffects = Sets.<PotionEffect>newHashSet();
     
     private BlockPos cameFrom = null;
@@ -47,6 +51,22 @@ public class EntityCustomArrow extends CustomProjectile
     	RenderingRegistry.registerEntityRenderingHandler(EntityCustomArrow.class, new RenderCustomArrow(Minecraft.getMinecraft().getRenderManager()));
     }
     
+    /*public SPacketSpawnObject customSpawn(Entity entityIn, int typeIn, int dataIn)
+    {
+        this.entityId = entityIn.getEntityId();
+        this.uniqueId = entityIn.getUniqueID();
+        this.x = entityIn.posX;
+        this.y = entityIn.posY;
+        this.z = entityIn.posZ;
+        this.pitch = MathHelper.floor_float(entityIn.rotationPitch * 256.0F / 360.0F);
+        this.yaw = MathHelper.floor_float(entityIn.rotationYaw * 256.0F / 360.0F);
+        this.type = typeIn;
+        this.data = dataIn;
+        double d0 = 3.9D;
+        this.speedX = (int)(MathHelper.clamp_double(entityIn.motionX, -3.9D, 3.9D) * 8000.0D);
+        this.speedY = (int)(MathHelper.clamp_double(entityIn.motionY, -3.9D, 3.9D) * 8000.0D);
+        this.speedZ = (int)(MathHelper.clamp_double(entityIn.motionZ, -3.9D, 3.9D) * 8000.0D);
+    }*/
     
     public void setBlockFrom(BlockPos pos) {
     	cameFrom = pos;
@@ -73,7 +93,7 @@ public class EntityCustomArrow extends CustomProjectile
 
     public void setPotionEffect(ItemStack stack)
     {
-        if (stack.getItem() == Items.tipped_arrow)
+        if (stack.getItem() == Items.TIPPED_ARROW)
         {
             this.potion = PotionUtils.getPotionTypeFromNBT(stack.getTagCompound());
             Collection<PotionEffect> collection = PotionUtils.getFullEffectsFromItem(stack);
@@ -86,13 +106,13 @@ public class EntityCustomArrow extends CustomProjectile
                 }
             }
 
-            this.dataWatcher.set(COLOR, Integer.valueOf(PotionUtils.getPotionColorFromEffectList(PotionUtils.mergeEffects(this.potion, collection))));
+            this.dataManager.set(COLOR, Integer.valueOf(PotionUtils.getPotionColorFromEffectList(PotionUtils.mergeEffects(this.potion, collection))));
         }
-        else if (stack.getItem() == Items.arrow)
+        else if (stack.getItem() == Items.ARROW)
         {
-            this.potion = PotionTypes.empty;
+            this.potion = PotionTypes.EMPTY;
             this.customPotionEffects.clear();
-            this.dataWatcher.set(COLOR, Integer.valueOf(0));
+            this.dataManager.set(COLOR, Integer.valueOf(0));
         }
     }
 
@@ -105,7 +125,7 @@ public class EntityCustomArrow extends CustomProjectile
     protected void entityInit()
     {
         super.entityInit();
-        this.dataWatcher.register(COLOR, Integer.valueOf(0));
+        this.dataManager.register(COLOR, Integer.valueOf(0));
     }
 
     /**
@@ -132,9 +152,9 @@ public class EntityCustomArrow extends CustomProjectile
         else if (this.inGround && this.field_184552_b != 0 && !this.customPotionEffects.isEmpty() && this.field_184552_b >= 600)
         {
             this.worldObj.setEntityState(this, (byte)0);
-            this.potion = PotionTypes.empty;
+            this.potion = PotionTypes.EMPTY;
             this.customPotionEffects.clear();
-            this.dataWatcher.set(COLOR, Integer.valueOf(0));
+            this.dataManager.set(COLOR, Integer.valueOf(0));
         }
     }
 
@@ -157,7 +177,7 @@ public class EntityCustomArrow extends CustomProjectile
 
     public int getColor()
     {
-        return ((Integer)this.dataWatcher.get(COLOR)).intValue();
+        return ((Integer)this.dataManager.get(COLOR)).intValue();
     }
 
     /**
@@ -167,9 +187,9 @@ public class EntityCustomArrow extends CustomProjectile
     {
         super.writeEntityToNBT(tagCompound);
 
-        if (this.potion != PotionTypes.empty && this.potion != null)
+        if (this.potion != PotionTypes.EMPTY && this.potion != null)
         {
-            tagCompound.setString("Potion", ((ResourceLocation)PotionType.potionTypeRegistry.getNameForObject(this.potion)).toString());
+            tagCompound.setString("Potion", ((ResourceLocation)PotionType.REGISTRY.getNameForObject(this.potion)).toString());
         }
 
         if (!this.customPotionEffects.isEmpty())
@@ -190,7 +210,7 @@ public class EntityCustomArrow extends CustomProjectile
      */
     public void readEntityFromNBT(NBTTagCompound tagCompund)
     {
-        super.readEntityFromNBT(tagCompund);
+        super.readEntityFromNBT(tagCompund);        
 
         if (tagCompund.hasKey("Potion", 8))
         {
@@ -202,9 +222,9 @@ public class EntityCustomArrow extends CustomProjectile
             this.addEffect(potioneffect);
         }
 
-        if (this.potion != PotionTypes.empty || !this.customPotionEffects.isEmpty())
+        if (this.potion != PotionTypes.EMPTY || !this.customPotionEffects.isEmpty())
         {
-            this.dataWatcher.set(COLOR, Integer.valueOf(PotionUtils.getPotionColorFromEffectList(PotionUtils.mergeEffects(this.potion, this.customPotionEffects))));
+            this.dataManager.set(COLOR, Integer.valueOf(PotionUtils.getPotionColorFromEffectList(PotionUtils.mergeEffects(this.potion, this.customPotionEffects))));
         }
     }
 
@@ -228,13 +248,13 @@ public class EntityCustomArrow extends CustomProjectile
 
     protected ItemStack getArrowStack()
     {
-        if (this.customPotionEffects.isEmpty() && this.potion == PotionTypes.empty)
+        if (this.customPotionEffects.isEmpty() && this.potion == PotionTypes.EMPTY)
         {
-            return new ItemStack(Items.arrow);
+            return new ItemStack(Items.ARROW);
         }
         else
         {
-            ItemStack itemstack = new ItemStack(Items.tipped_arrow);
+            ItemStack itemstack = new ItemStack(Items.TIPPED_ARROW);
             PotionUtils.addPotionToItemStack(itemstack, this.potion);
             PotionUtils.appendEffects(itemstack, this.customPotionEffects);
             return itemstack;
@@ -265,4 +285,27 @@ public class EntityCustomArrow extends CustomProjectile
             super.handleStatusUpdate(id);
         }
     }
+
+	@Override
+	public void writeSpawnData(ByteBuf buffer) {
+		// TODO Auto-generated method stub
+		if(this.cameFrom != null) {
+			buffer.writeInt(cameFrom.getX());
+			buffer.writeInt(cameFrom.getY());
+			buffer.writeInt(cameFrom.getZ());
+        }
+		
+	}
+
+	@Override
+	public void readSpawnData(ByteBuf additionalData) {
+		// TODO Auto-generated method stub
+		
+		int x = additionalData.readInt();
+        int y = additionalData.readInt();
+        int z = additionalData.readInt();
+        
+        cameFrom = new BlockPos(x,y,z);
+		
+	}
 }

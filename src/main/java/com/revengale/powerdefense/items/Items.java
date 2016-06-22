@@ -5,7 +5,10 @@ import com.revengale.powerdefense.blocks.TurretBlock;
 import com.revengale.powerdefense.blocks.itempedestal.PedestalBlock;
 import com.revengale.powerdefense.items.projectiles.EntityCustomArrow;
 
+import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.fml.common.ModContainer;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
+import net.minecraftforge.fml.common.registry.EntityRegistry.EntityRegistration;
 
 public final class Items {
 
@@ -21,7 +24,6 @@ public final class Items {
 		
 		//Entities
 		EntityRegistry.registerModEntity(EntityCustomArrow.class, EntityCustomArrow.name, entityId++, PowerDefense.instance, 64, 20, true);
-		
 		
 	}
 	

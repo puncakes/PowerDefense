@@ -31,7 +31,7 @@ public class PedestalBlock extends Block implements ITileEntityProvider {
 	public static void init() {
 		instance.setUnlocalizedName(name);
 		instance.setRegistryName(name);
-		instance.setCreativeTab(CreativeTabs.tabMisc);
+		instance.setCreativeTab(CreativeTabs.MISC);
         GameRegistry.register(instance);
         GameRegistry.registerTileEntity(PedestalTileEntity.class, name);
         GameRegistry.register(new ItemBlock(instance), instance.getRegistryName());
@@ -39,7 +39,7 @@ public class PedestalBlock extends Block implements ITileEntityProvider {
 	}
 
     public PedestalBlock() {
-        super(Material.rock);
+        super(Material.ROCK);
         
     }
 

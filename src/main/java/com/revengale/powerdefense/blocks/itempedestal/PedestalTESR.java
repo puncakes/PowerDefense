@@ -72,7 +72,7 @@ public class PedestalTESR extends TileEntitySpecialRenderer<PedestalTileEntity> 
         GlStateManager.rotate(angle, 0, 1, 0);
 
         RenderHelper.disableStandardItemLighting();
-        this.bindTexture(TextureMap.locationBlocksTexture);
+        this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
         if (Minecraft.isAmbientOcclusionEnabled()) {
             GlStateManager.shadeModel(GL11.GL_SMOOTH);
         } else {

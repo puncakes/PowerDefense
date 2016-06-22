@@ -21,6 +21,7 @@ import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.GameRegistry;
@@ -35,7 +36,7 @@ public class TurretItem extends Item {
 
 		instance.setUnlocalizedName("Turret");
 		instance.setRegistryName("Turret");
-		instance.setCreativeTab(CreativeTabs.tabMisc);
+		instance.setCreativeTab(CreativeTabs.MISC);
 		GameRegistry.register(instance);
 	}
 	
@@ -62,7 +63,7 @@ public class TurretItem extends Item {
 
                 if (tileentity != null)
                 {
-                    if (!worldIn.isRemote && tileentity.func_183000_F() && (pos == null || !minecraftserver.getPlayerList().canSendCommands(pos.getGameProfile())))
+                    if (!worldIn.isRemote && (pos == null || !minecraftserver.getPlayerList().canSendCommands(pos.getGameProfile())))
                     {
                         return false;
                     }
@@ -123,8 +124,8 @@ public class TurretItem extends Item {
 
             if (placeBlockAt(stack, playerIn, worldIn, pos, facing, hitX, hitY, hitZ, iblockstate1))
             {
-                SoundType soundtype = TurretBlock.instance.getStepSound();
-                worldIn.playSound(playerIn, pos, soundtype.getPlaceSound(), SoundCategory.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F);
+                SoundEvent soundtype = TurretBlock.instance.getSoundType().getStepSound();
+                worldIn.playSound(playerIn, pos, soundtype, SoundCategory.BLOCKS,  1.0F, 0.8F);
                 --stack.stackSize;
             }
 

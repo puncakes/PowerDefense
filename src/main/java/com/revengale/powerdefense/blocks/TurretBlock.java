@@ -32,11 +32,12 @@ public class TurretBlock extends Block implements ITileEntityProvider {
 	public static void init() {
 		instance.setUnlocalizedName(name);
 		instance.setRegistryName(name);
-		instance.setCreativeTab(CreativeTabs.tabMisc);
+		instance.setCreativeTab(CreativeTabs.MISC);
 		GameRegistry.register(instance);
 		GameRegistry.registerTileEntity(TurretBlockTileEntity.class, name);
 	}
 	
+	@SideOnly(Side.CLIENT)
 	public static void initClient() {
 		//Item item = Item.getItemFromBlock(instance);
 		ModelLoader.setCustomModelResourceLocation(TurretItem.instance, 0, new ModelResourceLocation(PowerDefense.MODID + ":" + "Turret", "inventory"));
@@ -74,7 +75,7 @@ public class TurretBlock extends Block implements ITileEntityProvider {
 	}
 	
 	public TurretBlock() {
-		super(Material.rock);
+		super(Material.ROCK);
 	}
 
 	//@Override

@@ -169,7 +169,7 @@ public class PowerDefenseUtils {
                     IBlockState iblockstate1 = world.getBlockState(blockpos);
                     Block block1 = iblockstate1.getBlock();
 
-                    if (!ignoreBlockWithoutBoundingBox || iblockstate1.getMaterial() == Material.portal || iblockstate1.getSelectedBoundingBox(world, blockpos) != Block.NULL_AABB)
+                    if (!ignoreBlockWithoutBoundingBox || iblockstate1.getMaterial() == Material.PORTAL || iblockstate1.getSelectedBoundingBox(world, blockpos) != Block.NULL_AABB)
                     {
                         if (block1.canCollideCheck(iblockstate1, stopOnLiquid))
                         {

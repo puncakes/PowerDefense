@@ -23,6 +23,8 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class TurretBlockTileEntity extends TileEntity implements ITickable {
 
@@ -53,23 +55,18 @@ public class TurretBlockTileEntity extends TileEntity implements ITickable {
     
     public float leftGunScale = 1.0f;
     public float rightGunScale = 1.0f;
-    private float recoil = 0.8f;
-    private float recoilRecovery = 0.05f;
+    public float recoil = 0.8f;
+    public float recoilRecovery = 0.05f;
     
-    private Random rand;
+    public Random rand = new Random();
     
     //toggle projectile coming out of each barrel 1/-1
-    private double barrelToggle = 1.0;
+    public double barrelToggle = 1.0;
     
     boolean justLostTarget = false;
     private Vec3d center = null;
+    private long totalTicks = 0;
     
-    public TurretBlockTileEntity() {
-    	super();
-    	MinecraftForge.EVENT_BUS.register(this);
-    	rand = new Random();    	
-    }
-
     public void setStack(ItemStack stack) {
         this.stack = stack;
         markDirty();
@@ -80,7 +77,7 @@ public class TurretBlockTileEntity extends TileEntity implements ITickable {
     }
 
     @Override
-    public Packet getDescriptionPacket() {
+    public SPacketUpdateTileEntity getUpdatePacket() {
         // Prepare a packet for syncing our TE to the client. Since we only have to sync the stack
         // and that's all we have we just write our entire NBT here. If you have a complex
         // tile entity that doesn't need to have all information on the client you can write
@@ -107,30 +104,15 @@ public class TurretBlockTileEntity extends TileEntity implements ITickable {
     }
 
     @Override
-    public void writeToNBT(NBTTagCompound compound) {
+    public NBTTagCompound writeToNBT(NBTTagCompound compound) {
         super.writeToNBT(compound);
         if (stack != null) {
             NBTTagCompound tagCompound = new NBTTagCompound();
             stack.writeToNBT(tagCompound);
             compound.setTag("item", tagCompound);
         }
-    }
-    
-    @SubscribeEvent
-    public void onEntitySpawn (EntityJoinWorldEvent event) {
-		if(event.getEntity() instanceof EntityCustomArrow ) {
-			EntityCustomArrow arrow = (EntityCustomArrow) event.getEntity();
-	    	if(this.getPos().equals(arrow.getBlockFrom())) {
-	    		barrelToggle *= -1;
-	    		if(barrelToggle < 0) {
-			   		leftGunScale = recoil;
-			   	} else {
-			   		rightGunScale = recoil;
-			   	}
-	    		worldObj.playSound((EntityPlayer)null, this.getPos().getX(), this.getPos().getY(), this.getPos().getZ(), PowerDefenseSoundEvents.turret_gun, SoundCategory.NEUTRAL, 0.25f, 1.2F / (this.rand.nextFloat() * 0.2F + 0.9F));
-	    	}
-	    }
-	}
+		return compound;
+    }   
     
     private boolean onTarget() {
     	float deg = (float) Math.atan2(Math.cos(targetBodyAngleRad-curBodyAngleRad), Math.sin(targetBodyAngleRad-curBodyAngleRad));
@@ -174,7 +156,7 @@ public class TurretBlockTileEntity extends TileEntity implements ITickable {
 		if(target != null) {		
 			
 			double xOff = 0;  //(tBB.maxX - tBB.minX) / 2.0;
-			double yOff = 0.5;//(tBB.maxY - tBB.minY) / 2.0;
+			double yOff = target.getEyeHeight();//(tBB.maxY - tBB.minY) / 2.0;
 			double zOff = 0;  //(tBB.maxZ - tBB.minZ) / 2.0;
 			Vec3d dir = center.subtract(new Vec3d(target.posX+xOff, target.posY+yOff, target.posZ+zOff));
 			targetDir = dir.normalize();
@@ -192,7 +174,7 @@ public class TurretBlockTileEntity extends TileEntity implements ITickable {
 			boolean right = (curBodyAngle-targetBodyAngle+360)%360>180;
 			
 			//only shoot when on target
-			if(onTarget() && (ticksSinceLastChoice == 0 || ticksSinceLastChoice == 5 || ticksSinceLastChoice == 10 || ticksSinceLastChoice == 15)) {
+			if(onTarget() && ( totalTicks % 10 == 0)) {
 				//worldObj.playAuxSFXAtEntity(this, "random.bow", 0.5F, 0.4F);
 				double xzLen = Math.cos(Math.toRadians(curGunAngle));
 				double z = xzLen * Math.sin(Math.toRadians(curBodyAngle));
@@ -237,6 +219,7 @@ public class TurretBlockTileEntity extends TileEntity implements ITickable {
 		leftGunScale = Math.min(leftGunScale + recoilRecovery, 1.0f);
 		rightGunScale = Math.min(rightGunScale + recoilRecovery, 1.0f);
 		ticksSinceLastChoice++;
+		totalTicks++;
 		
 	}
 }

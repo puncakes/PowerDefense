@@ -1,6 +1,7 @@
-package com.revengale.powerdefense.proxies;
+ package com.revengale.powerdefense.proxies;
 
 import com.revengale.powerdefense.PowerDefense;
+import com.revengale.powerdefense.EventHandlers.TurretHandler;
 import com.revengale.powerdefense.items.Items;
 
 import net.minecraftforge.client.model.obj.OBJLoader;
@@ -15,7 +16,7 @@ public class ClientProxy extends CommonProxy {
 	public void preInit(FMLPreInitializationEvent e) {
 		// TODO Auto-generated method stub
 		super.preInit(e);
-		OBJLoader.INSTANCE.addDomain(PowerDefense.MODID);
+		OBJLoader.INSTANCE.addDomain(PowerDefense.MODID);		
 	}
 
 	@Override
@@ -24,6 +25,7 @@ public class ClientProxy extends CommonProxy {
 		super.init(e);
 		OBJLoader.INSTANCE.addDomain(PowerDefense.MODID);
 		Items.setupClients();
+		
 	}
 
 	@Override

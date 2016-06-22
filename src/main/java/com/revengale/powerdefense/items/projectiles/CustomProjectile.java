@@ -114,7 +114,7 @@ public abstract class CustomProjectile extends Entity implements IProjectile
 
     protected void entityInit()
     {
-        this.dataWatcher.register(CRITICAL, Byte.valueOf((byte)0));
+    	this.dataManager.register(CRITICAL, Byte.valueOf((byte)0));
     }
 
     public void func_184547_a(Entity p_184547_1_, float p_184547_2_, float p_184547_3_, float p_184547_4_, float p_184547_5_, float p_184547_6_)
@@ -204,9 +204,9 @@ public abstract class CustomProjectile extends Entity implements IProjectile
         Block block = iblockstate.getBlock();
 
         //***TODO:: Make cleaner exclusion list
-        if (iblockstate.getMaterial() != Material.air && !(iblockstate.getBlock() instanceof TurretBlock))
+        if (iblockstate.getMaterial() != Material.AIR && !(iblockstate.getBlock() instanceof TurretBlock))
         {
-            AxisAlignedBB axisalignedbb = iblockstate.getSelectedBoundingBox(this.worldObj, blockpos);
+        	AxisAlignedBB axisalignedbb = iblockstate.getCollisionBoundingBox(this.worldObj, blockpos);
 
             if (axisalignedbb != Block.NULL_AABB && axisalignedbb.offset(blockpos).isVecInside(new Vec3d(this.posX, this.posY, this.posZ)))
             {
@@ -414,7 +414,7 @@ public abstract class CustomProjectile extends Entity implements IProjectile
 
                     if (this.shootingEntity != null && entitylivingbase != this.shootingEntity && entitylivingbase instanceof EntityPlayer && this.shootingEntity instanceof EntityPlayerMP)
                     {
-                        ((EntityPlayerMP)this.shootingEntity).playerNetServerHandler.sendPacket(new SPacketChangeGameState(6, 0.0F));
+                        ((EntityPlayerMP)this.shootingEntity).connection.sendPacket(new SPacketChangeGameState(6, 0.0F));
                     }
                 }
 
@@ -466,7 +466,7 @@ public abstract class CustomProjectile extends Entity implements IProjectile
             this.arrowShake = 7;
             this.setIsCritical(false);
 
-            if (iblockstate.getMaterial() != Material.air)
+            if (iblockstate.getMaterial() != Material.AIR)
             {
                 this.inTile.onEntityCollidedWithBlock(this.worldObj, blockpos, iblockstate, this);
             }
@@ -517,7 +517,7 @@ public abstract class CustomProjectile extends Entity implements IProjectile
         tagCompound.setInteger("yTile", this.yTile);
         tagCompound.setInteger("zTile", this.zTile);
         tagCompound.setShort("life", (short)this.ticksInGround);
-        ResourceLocation resourcelocation = (ResourceLocation)Block.blockRegistry.getNameForObject(this.inTile);
+        ResourceLocation resourcelocation = (ResourceLocation)Block.REGISTRY.getNameForObject(this.inTile);
         tagCompound.setString("inTile", resourcelocation == null ? "" : resourcelocation.toString());
         tagCompound.setByte("inData", (byte)this.inData);
         tagCompound.setByte("shake", (byte)this.arrowShake);
@@ -580,7 +580,7 @@ public abstract class CustomProjectile extends Entity implements IProjectile
 
             if (flag)
             {
-                this.playSound(SoundEvents.entity_item_pickup, 0.2F, ((this.rand.nextFloat() - this.rand.nextFloat()) * 0.7F + 1.0F) * 2.0F);
+                this.playSound(SoundEvents.ENTITY_ITEM_PICKUP, 0.2F, ((this.rand.nextFloat() - this.rand.nextFloat()) * 0.7F + 1.0F) * 2.0F);
                 entityIn.onItemPickup(this, 1);
                 this.setDead();
             }
@@ -640,15 +640,15 @@ public abstract class CustomProjectile extends Entity implements IProjectile
      */
     public void setIsCritical(boolean critical)
     {
-        byte b0 = ((Byte)this.dataWatcher.get(CRITICAL)).byteValue();
+        byte b0 = ((Byte)this.dataManager.get(CRITICAL)).byteValue();
 
         if (critical)
         {
-            this.dataWatcher.set(CRITICAL, Byte.valueOf((byte)(b0 | 1)));
+            this.dataManager.set(CRITICAL, Byte.valueOf((byte)(b0 | 1)));
         }
         else
         {
-            this.dataWatcher.set(CRITICAL, Byte.valueOf((byte)(b0 & -2)));
+            this.dataManager.set(CRITICAL, Byte.valueOf((byte)(b0 & -2)));
         }
     }
 
@@ -657,7 +657,7 @@ public abstract class CustomProjectile extends Entity implements IProjectile
      */
     public boolean getIsCritical()
     {
-        byte b0 = ((Byte)this.dataWatcher.get(CRITICAL)).byteValue();
+        byte b0 = ((Byte)this.dataManager.get(CRITICAL)).byteValue();
         return (b0 & 1) != 0;
     }
 
