@@ -1,6 +1,6 @@
 package com.revengale.powerdefense.renderer;
 
-import com.revengale.powerdefense.items.projectiles.EntityCustomArrow;
+import com.revengale.powerdefense.entities.projectiles.EntityCustomArrow;
 
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;

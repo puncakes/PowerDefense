@@ -3,7 +3,7 @@ package com.revengale.powerdefense.items;
 import com.revengale.powerdefense.PowerDefense;
 import com.revengale.powerdefense.blocks.TurretBlock;
 import com.revengale.powerdefense.blocks.itempedestal.PedestalBlock;
-import com.revengale.powerdefense.items.projectiles.EntityCustomArrow;
+import com.revengale.powerdefense.entities.projectiles.EntityCustomArrow;
 
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.ModContainer;

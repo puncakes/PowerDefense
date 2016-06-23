@@ -5,7 +5,7 @@ import java.util.Random;
 
 import com.revengale.powerdefense.PowerDefenseSoundEvents;
 import com.revengale.powerdefense.PowerDefenseUtils;
-import com.revengale.powerdefense.items.projectiles.EntityCustomArrow;
+import com.revengale.powerdefense.entities.projectiles.EntityCustomArrow;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
@@ -50,6 +50,9 @@ public class TurretBlockTileEntity extends TileEntity implements ITickable {
     
     public Vec3d targetDir = Vec3d.ZERO;
     public Vec3d currentDir = Vec3d.ZERO;
+    
+    public Vec3d leftBarrelTip = Vec3d.ZERO;
+    public Vec3d rightBarrelTip = Vec3d.ZERO;
     
     public float rotationDelta = 3.0f;
     
@@ -115,9 +118,10 @@ public class TurretBlockTileEntity extends TileEntity implements ITickable {
     }   
     
     private boolean onTarget() {
+    	
     	float deg = (float) Math.atan2(Math.cos(targetBodyAngleRad-curBodyAngleRad), Math.sin(targetBodyAngleRad-curBodyAngleRad));
     	
-    	if(Math.toDegrees(deg) < 15) {
+    	if(Math.abs(Math.toDegrees(deg)) < 15) {
     		return true;
     	}
     	return false;
@@ -182,13 +186,20 @@ public class TurretBlockTileEntity extends TileEntity implements ITickable {
 				double x = -xzLen * Math.cos(Math.toRadians(-curBodyAngle));
 			   
 				//for use in client rendering (scaling for recoil)
-				currentDir = new Vec3d(x,y,z);				
+				currentDir = new Vec3d(x,y,z).scale(0.75);
+				
+				leftBarrelTip = new Vec3d(center.xCoord + currentDir.xCoord + (0.2 * -z), center.yCoord + currentDir.yCoord, center.zCoord + currentDir.zCoord - (0.2 * -x));
+				rightBarrelTip = new Vec3d(center.xCoord + currentDir.xCoord + (0.2 * z), center.yCoord + currentDir.yCoord, center.zCoord + currentDir.zCoord - (0.2 *  x));
 				
 			   	if (!worldObj.isRemote)
 			   	{
 			   		EntityCustomArrow arrow = new EntityCustomArrow(worldObj);
 			   		//add direction vector and perpendicular vector to place projectiles at the barrel
-			   		arrow.setPosition(center.xCoord + x + (0.2 * barrelToggle * z), center.yCoord + y, center.zCoord + z - (0.2 * barrelToggle * x));
+			   		if(barrelToggle < 0) {
+			   			arrow.setPosition(leftBarrelTip.xCoord, leftBarrelTip.yCoord, leftBarrelTip.zCoord);
+			   		} else {
+			   			arrow.setPosition(rightBarrelTip.xCoord, rightBarrelTip.yCoord, rightBarrelTip.zCoord);
+			   		}
 			   		arrow.setThrowableHeading(x, y, z, 2f, 2f);
 			   		
 			   		//recoil animation starts when the entity is spawned client side!
@@ -199,6 +210,26 @@ public class TurretBlockTileEntity extends TileEntity implements ITickable {
 			   	}			   	
 			   
 			}
+
+            while (this.curBodyAngle < -180.0F)
+            {
+                this.curBodyAngle += 360.0F;
+            }
+
+            while (this.curBodyAngle  >= 180.0F)
+            {
+                this.curBodyAngle -= 360.0F;
+            }
+            
+            while (this.targetBodyAngle < -180.0F)
+            {
+                this.targetBodyAngle += 360.0F;
+            }
+
+            while (this.targetBodyAngle  >= 180.0F)
+            {
+                this.targetBodyAngle -= 360.0F;
+            }
 			
 			if(right) {
 				curBodyAngle = Math.min(curBodyAngle + rotationDelta, targetBodyAngle);

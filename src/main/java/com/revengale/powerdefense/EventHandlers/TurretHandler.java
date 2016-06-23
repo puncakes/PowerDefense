@@ -2,8 +2,10 @@ package com.revengale.powerdefense.EventHandlers;
 
 import com.revengale.powerdefense.PowerDefenseSoundEvents;
 import com.revengale.powerdefense.blocks.TurretBlockTileEntity;
-import com.revengale.powerdefense.items.projectiles.EntityCustomArrow;
+import com.revengale.powerdefense.entities.particles.ParticleMuzzleFlash;
+import com.revengale.powerdefense.entities.projectiles.EntityCustomArrow;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
@@ -44,9 +46,15 @@ public class TurretHandler {
 			   	} else {
 			   		te.rightGunScale = te.recoil;
 			   	}
-    		}
 	    		
-	    	world.playSound((EntityPlayer)null, blockFrom.getX(), blockFrom.getY(), blockFrom.getZ(), PowerDefenseSoundEvents.turret_gun, SoundCategory.NEUTRAL, 0.25f, 1.2F / (te.rand.nextFloat() * 0.2F + 0.9F));
+	    		//not sure why > works?
+		    	if(te.barrelToggle > 0) {
+		    		Minecraft.getMinecraft().effectRenderer.addEffect(new ParticleMuzzleFlash(world, te.leftBarrelTip.xCoord, te.leftBarrelTip.yCoord, te.leftBarrelTip.zCoord, 0, 0, 0));
+		    	} else {
+		    		Minecraft.getMinecraft().effectRenderer.addEffect(new ParticleMuzzleFlash(world, te.rightBarrelTip.xCoord, te.rightBarrelTip.yCoord, te.rightBarrelTip.zCoord, 0, 0, 0));
+		    	}
+    		}    		
+    		world.playSound((EntityPlayer)null, blockFrom.getX(), blockFrom.getY(), blockFrom.getZ(), PowerDefenseSoundEvents.turret_gun, SoundCategory.NEUTRAL, 0.25f, 1.2F / (te.rand.nextFloat() * 0.2F + 0.9F));
     	}
     }
 }

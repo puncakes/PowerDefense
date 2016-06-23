@@ -1,4 +1,4 @@
-package com.revengale.powerdefense.items.projectiles;
+package com.revengale.powerdefense.entities.projectiles;
 
 import java.util.List;
 
@@ -427,22 +427,7 @@ public abstract class CustomProjectile extends Entity implements IProjectile
             }
             else
             {
-                this.motionX *= -0.10000000149011612D;
-                this.motionY *= -0.10000000149011612D;
-                this.motionZ *= -0.10000000149011612D;
-                this.rotationYaw += 180.0F;
-                this.prevRotationYaw += 180.0F;
-                this.ticksInAir = 0;
-
-                if (!this.worldObj.isRemote && this.motionX * this.motionX + this.motionY * this.motionY + this.motionZ * this.motionZ < 0.0010000000474974513D)
-                {
-                    if (this.canBePickedUp == CustomProjectile.PickupStatus.ALLOWED)
-                    {
-                        this.entityDropItem(this.getArrowStack(), 0.1F);
-                    }
-
-                    this.setDead();
-                }
+            	this.setDead();
             }
         }
         else

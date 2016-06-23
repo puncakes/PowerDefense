@@ -1,4 +1,4 @@
-package com.revengale.powerdefense.items.projectiles;
+package com.revengale.powerdefense.entities.projectiles;
 
 import java.util.Collection;
 import java.util.Set;
