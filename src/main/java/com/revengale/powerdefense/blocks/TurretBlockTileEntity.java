@@ -3,7 +3,6 @@ package com.revengale.powerdefense.blocks;
 import java.util.List;
 import java.util.Random;
 
-import com.revengale.powerdefense.PowerDefenseSoundEvents;
 import com.revengale.powerdefense.PowerDefenseUtils;
 import com.revengale.powerdefense.entities.projectiles.EntityCustomArrow;
 
@@ -13,18 +12,11 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
-import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ITickable;
-import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.Vec3d;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.entity.EntityJoinWorldEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class TurretBlockTileEntity extends TileEntity implements ITickable {
 
