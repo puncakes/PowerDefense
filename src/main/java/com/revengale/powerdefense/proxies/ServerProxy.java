@@ -1,5 +1,8 @@
 package com.revengale.powerdefense.proxies;
 
+import com.revengale.powerdefense.EventHandlers.TurretHandlerServer;
+
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -10,6 +13,7 @@ public class ServerProxy extends CommonProxy {
 	public void preInit(FMLPreInitializationEvent e) {
 		// TODO Auto-generated method stub
 		super.preInit(e);
+		MinecraftForge.EVENT_BUS.register(TurretHandlerServer.instance);
 	}
 
 	@Override

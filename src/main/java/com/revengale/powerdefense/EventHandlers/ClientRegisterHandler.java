@@ -17,6 +17,8 @@ public class ClientRegisterHandler {
 	@SubscribeEvent
 	@SideOnly(Side.CLIENT)
 	public void registerTextures(TextureStitchEvent.Pre event) {
-		ParticleUtils.SPRITE_MUZZLE_FLASH = event.getMap().registerSprite(new ResourceLocation(PowerDefense.MODID + ":" + "particles/muzzleflash"));		
+		ParticleUtils.SPRITE_MUZZLE_FLASH = event.getMap().registerSprite(new ResourceLocation(PowerDefense.MODID + ":" + "particles/muzzleflash"));
+		event.getMap().registerSprite(new ResourceLocation(PowerDefense.MODID + ":" + "blocks/turretbody"));
+		event.getMap().registerSprite(new ResourceLocation(PowerDefense.MODID + ":" + "blocks/turretgun"));
 	}
 }

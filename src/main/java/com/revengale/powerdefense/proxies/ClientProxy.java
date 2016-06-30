@@ -2,6 +2,7 @@
 
 import com.revengale.powerdefense.PowerDefense;
 import com.revengale.powerdefense.EventHandlers.ClientRegisterHandler;
+import com.revengale.powerdefense.EventHandlers.TurretHandlerClient;
 import com.revengale.powerdefense.items.Items;
 
 import net.minecraftforge.client.model.obj.OBJLoader;
@@ -18,6 +19,7 @@ public class ClientProxy extends CommonProxy {
 		super.preInit(e);
 		OBJLoader.INSTANCE.addDomain(PowerDefense.MODID);
 		MinecraftForge.EVENT_BUS.register(ClientRegisterHandler.instance);
+		MinecraftForge.EVENT_BUS.register(TurretHandlerClient.instance);
 	}
 
 	@Override
