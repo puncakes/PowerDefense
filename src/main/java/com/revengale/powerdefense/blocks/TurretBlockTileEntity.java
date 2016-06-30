@@ -157,6 +157,11 @@ public class TurretBlockTileEntity extends TileEntity implements ITickable {
 			ticksSinceLastChoice = 0;
 		}
 		
+		//not confident this will happen, but just in case
+		if(target.isDead) {
+			target = null;
+		}
+		
 		if(target != null) {		
 			
 			double xOff = 0;  //(tBB.maxX - tBB.minX) / 2.0;

@@ -1,8 +1,6 @@
 package com.revengale.powerdefense.blocks;
 
 import com.revengale.powerdefense.PowerDefense;
-import com.revengale.powerdefense.blocks.itempedestal.PedestalTESR;
-import com.revengale.powerdefense.blocks.itempedestal.PedestalTileEntity;
 import com.revengale.powerdefense.items.TurretItem;
 
 import net.minecraft.block.Block;
@@ -11,8 +9,6 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
